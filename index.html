@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyboard Elite | Srullogic Systems</title>
+    
+    <meta name="description" content="המרת מקלדת הפוכה באופן אוטומטי ומקצועי.">
+    <meta name="google-site-verification" content="google5d50e2859c657986" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #7240f2; --bg: #f4f7fe; --card: #ffffff; --text: #333;
+            --input-border: #e0e6ed; --accent-green: #1ebea5; --accent-red: #ff4757;
+        }
+        body { font-family: 'Assistant', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        
+        .container { width: 90%; max-width: 480px; background: var(--card); padding: 40px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); text-align: center; position: relative; }
+
+        /* קיבוע הלוגו */
+        .logo-area { width: 100%; height: 100px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; overflow: hidden; }
+        .logo-area img { max-height: 100%; width: auto; object-fit: contain; }
+
+        /* תפריט ניווט צף */
+        .nav-wrapper { position: fixed; left: 20px; top: 50%; transform: translateY(-50%); z-index: 999; }
+        .nav-trigger { background: var(--primary); color: white; border: none; width: 55px; height: 55px; border-radius: 50%; cursor: pointer; font-size: 1.5rem; box-shadow: 0 8px 20px rgba(114, 64, 242, 0.3); }
+        .nav-box { display: none; background: white; border-radius: 20px; padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); flex-direction: column; gap: 10px; margin-top: 10px; border: 1px solid #eee; }
+        .nav-box a { text-decoration: none; color: var(--text); font-weight: 700; padding: 10px 20px; border-radius: 10px; transition: 0.2s; white-space: nowrap; }
+        .nav-box a:hover { background: var(--bg); color: var(--primary); }
+
+        h1 { font-size: 2.2rem; color: var(--primary); margin: 0 0 25px 0; font-weight: 800; }
+        
+        textarea { width: 100%; height: 120px; border: 2px solid var(--input-border); border-radius: 18px; padding: 15px; box-sizing: border-box; font-family: inherit; font-size: 1.1rem; margin-bottom: 15px; transition: 0.3s; resize: none; }
+        textarea:focus { border-color: var(--primary); outline: none; background: #fafaff; }
+
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .btn { border: none; padding: 16px; border-radius: 15px; color: white; font-weight: 700; cursor: pointer; font-size: 1rem; transition: 0.2s; }
+        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
+        .bg-copy { background: var(--accent-green); }
+        .bg-clear { background: var(--accent-red); }
+        .bg-google { background: #ea4335; grid-column: span 2; }
+
+        footer { margin-top: 30px; font-size: 0.8rem; opacity: 0.6; border-top: 1px solid #eee; padding-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="nav-wrapper">
+    <button class="nav-trigger" onclick="toggleNav()">📂</button>
+    <div class="nav-box" id="mainNav">
+        <a href="index.html">🏠 מסך ראשי</a>
+        <a href="about.html">📜 אודות הפרויקט</a>
+        <a href="links.html" style="color: var(--primary);">🔗 כל הקישורים (Sitemap)</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="logo-area">
+        <img src="logo.png" alt="Srullogic Logo" onerror="this.src='https://via.placeholder.com/200x80?text=SRULLOGIC'">
+    </div>
+
+    <h1>Keyboard Elite</h1>
+
+    <textarea id="input" placeholder="הקלד כאן... (עברית או אנגלית)" oninput="smartConvert()"></textarea>
+    <textarea id="output" readonly placeholder="התוצאה תופיע כאן באופן אוטומטי..."></textarea>
+
+    <div class="btn-grid">
+        <button class="btn bg-copy" onclick="copy()">📋 העתק טקסט</button>
+        <button class="btn bg-clear" onclick="clean()">🗑️ נקה הכל</button>
+        <button class="btn bg-google" onclick="search()">🔍 חפש את התוצאה בגוגל</button>
+    </div>
+
+    <footer>
+        © 2026 Srullogic Systems. כל הזכויות שמורות.
+    </footer>
+</div>
+
+<script>
+    const enToHe = {'q':'/','w':'\'','e':'ק','r':'ר','t':'א','y':'ט','u':'ו','i':'ן','o':'ם','p':'פ','a':'ש','s':'ד','d':'ג','f':'כ','g':'ע','h':'י','j':'ח','k':'ל','l':'ך',';':'ף','\'':',','z':'ז','x':'ס','c':'ב','v':'ה','b':'נ','n':'מ','m':'צ',',':'ת','.':'ץ','/':'.',' ':' '};
+    const heToEn = Object.fromEntries(Object.entries(enToHe).map(([k, v]) => [v, k]));
+
+    function toggleNav() {
+        const n = document.getElementById('mainNav');
+        n.style.display = (n.style.display === 'flex') ? 'none' : 'flex';
+    }
+
+    function smartConvert() {
+        const val = document.getElementById('input').value;
+        if(!val) { document.getElementById('output').value = ""; return; }
+        
+        const isHeb = /[א-ת]/.test(val);
+        const map = isHeb ? heToEn : enToHe;
+        
+        let res = "";
+        for(let c of val.toLowerCase()) { res += map[c] || c; }
+        document.getElementById('output').value = res;
+    }
+
+    function copy() {
+        const t = document.getElementById('output');
+        t.select();
+        document.execCommand('copy');
+        alert("הועתק ללוח!");
+    }
+
+    function clean() {
+        document.getElementById('input').value = "";
+        document.getElementById('output').value = "";
+    }
+
+    function search() {
+        const v = document.getElementById('output').value;
+        if(v) window.open(`https://www.google.com/search?q=${encodeURIComponent(v)}`, '_blank');
+    }
+</script>
+</body>
+</html>
